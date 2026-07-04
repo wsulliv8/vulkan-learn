@@ -22,5 +22,7 @@ if (LINUX)
 endif()
 
 add_executable(Mine main.cpp)
+target_include_directories(Mine SYSTEM PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/tinyobj)
 target_compile_features(Mine PRIVATE cxx_std_20)
 target_link_libraries(Mine PRIVATE SDL3::SDL3 Vulkan::Vulkan)
