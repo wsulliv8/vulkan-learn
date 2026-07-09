@@ -13,9 +13,13 @@ FetchContent_MakeAvailable(SDL3)
 
 if (IS_DIRECTORY "$ENV{VULKAN_SDK}")
   include_directories(SYSTEM $ENV{VULKAN_SDK}/include)
+else()
+  message(FATAL_ERROR "Set VULKAN_SDK (source setup-env.sh)")
 endif()
 
 find_package(Vulkan REQUIRED)
+find_library(Slang_LIBRARY NAMES slang slang-compiler
+  HINTS "$ENV{VULKAN_SDK}/lib" REQUIRED)
 
 if (LINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_WAYLAND_KHR")
@@ -36,8 +40,10 @@ target_include_directories(ktx SYSTEM PUBLIC
   ${KTX_DIR}/other_include)
 target_link_libraries(ktx PUBLIC Vulkan::Vulkan)
 
-add_executable(Mine main.cpp)
+add_executable(Mine main.cpp assets/shader.slang)
 target_include_directories(Mine SYSTEM PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/external/tinyobj)
 target_compile_features(Mine PRIVATE cxx_std_20)
-target_link_libraries(Mine PRIVATE SDL3::SDL3 Vulkan::Vulkan ktx)
+target_link_libraries(Mine PRIVATE SDL3::SDL3 Vulkan::Vulkan ktx ${Slang_LIBRARY})
+set_target_properties(Mine PROPERTIES
+  DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
