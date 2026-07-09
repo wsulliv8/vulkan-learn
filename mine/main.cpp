@@ -560,6 +560,8 @@ int main(int argc, char *argv[]) {
     };
     chk(vkQueueSubmit(queue, 1, &oneTimeSI, fenceOneTime));
     chk(vkWaitForFences(device, 1, &fenceOneTime, VK_TRUE, UINT64_MAX));
+    vkDestroyFence(device, fenceOneTime, nullptr);
+    vmaDestroyBuffer(allocator, imgSrcBuffer, imgSrcAllocation);
 
     VkSamplerCreateInfo samplerCI{
         .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
